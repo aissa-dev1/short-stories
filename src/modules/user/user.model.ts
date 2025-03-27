@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-import { UserPlanType, UserType } from './user.types';
+import { UserPlanType, UserRoleType } from './user.types';
 
 @Schema({ collection: 'users', timestamps: true })
-export class User extends Document implements UserType {
+export class User extends Document {
   @Prop()
   name: string;
 
@@ -16,6 +16,9 @@ export class User extends Document implements UserType {
 
   @Prop({ default: 'free' })
   plan: UserPlanType;
+
+  @Prop({ default: 'user' })
+  role: UserRoleType;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -18,5 +18,6 @@ import { HashModule } from '../common/hash/hash.module';
   ],
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService],
 })
 export class UserModule {}

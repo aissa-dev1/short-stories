@@ -1,16 +1,8 @@
-import { IsEmail, IsOptional, Length } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
-import { UserType } from './user.types';
+import { AuthCredentialsDto } from '../auth/auth.dto';
 
-export class CreateUserDto implements UserType {
+export class CreateUserDto extends AuthCredentialsDto {
   @IsOptional()
   name?: string;
-
-  @IsEmail(undefined, { message: 'Please provide a valid Email Address' })
-  email: string;
-
-  @Length(4, undefined, {
-    message: 'You must write a strong Password',
-  })
-  password: string;
 }
