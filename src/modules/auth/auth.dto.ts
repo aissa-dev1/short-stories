@@ -5,7 +5,7 @@ export class AuthCredentialsDto {
   email: string;
 
   @Length(4, undefined, {
-    message: 'Please provide a strong Password',
+    message: 'Password must be at least 4 characters long',
   })
   password: string;
 }

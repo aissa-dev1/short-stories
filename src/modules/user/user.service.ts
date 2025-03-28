@@ -37,6 +37,14 @@ export class UserService {
     return user;
   }
 
+  async findOneLeanByIdWithPass(id: string): Promise<UserType | null> {
+    const user = (await this.userModel
+      .findById(id)
+      .select('+password')
+      .lean()) as UserType | null;
+    return user;
+  }
+
   async updateUser(
     id: string,
     update?: Partial<UserType>,
