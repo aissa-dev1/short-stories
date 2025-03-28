@@ -45,11 +45,12 @@ export class UserService {
     return user;
   }
 
-  async updateUser(
-    id: string,
-    update?: Partial<UserType>,
-  ): Promise<User | null> {
+  updateUser(id: string, update?: Partial<UserType>): Promise<User | null> {
     return this.userModel.findByIdAndUpdate(id, update, { new: true }).exec();
+  }
+
+  deleteUser(id: string): Promise<User | null> {
+    return this.userModel.findByIdAndDelete(id).exec();
   }
 
   private generateUserName(email: string): string {

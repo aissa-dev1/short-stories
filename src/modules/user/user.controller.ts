@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
+  Param,
   Post,
   Req,
   UnauthorizedException,
@@ -59,13 +61,13 @@ export class UserController {
       throw new NotFoundException('No user found');
     }
     if (user.name === dto.name) {
-      return { message: 'This is already your current Name' };
+      return { message: 'This is already your current name' };
     }
 
     await this.userService.updateUser(userId, {
       name: dto.name,
     });
-    return { message: 'Your Name have been edited successfully' };
+    return { message: 'Your name have been edited successfully' };
   }
 
   @Post('edit-email')
@@ -78,10 +80,10 @@ export class UserController {
       throw new NotFoundException('No user found');
     }
     if (user.email !== dto.currentEmail) {
-      throw new UnauthorizedException('Incorrect Email Address');
+      throw new UnauthorizedException('Incorrect email address');
     }
     if (user.email === dto.newEmail) {
-      return { message: 'This is your current Email' };
+      return { message: 'This is your current email' };
     }
 
     const userWithEmail = await this.userService.findOneLeanByEmail(
@@ -90,14 +92,14 @@ export class UserController {
 
     if (userWithEmail) {
       throw new UnauthorizedException(
-        'This Email is already linked with another Account',
+        'This email is already linked with another Account',
       );
     }
 
     await this.userService.updateUser(userId, {
       email: dto.newEmail,
     });
-    return { message: 'Your Email have been edited successfully' };
+    return { message: 'Your email have been edited successfully' };
   }
 
   @Post('change-password')
@@ -112,15 +114,34 @@ export class UserController {
     if (
       !(await this.hashService.compare(dto.currentPassword, user.password!))
     ) {
-      throw new UnauthorizedException('Incorrect Password');
+      throw new UnauthorizedException('Incorrect password');
     }
     if (await this.hashService.compare(dto.newPassword, user.password!)) {
-      return { message: 'This is your current Password' };
+      return { message: 'This is your current password' };
     }
 
     await this.userService.updateUser(userId, {
       password: await this.hashService.hash(dto.newPassword),
     });
-    return { message: 'Your Password have been edited successfully' };
+    return { message: 'Your password have been edited successfully' };
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
+  async deleteOne(@Param('id') id: string, @Req() req: Request) {
+    const userId = (req.user as UserJwtType).id;
+    const user = await this.userService.findOneLeanById(userId);
+
+    if (!user) {
+      throw new NotFoundException('No user found');
+    }
+    if (id !== userId) {
+      throw new UnauthorizedException(
+        'You are not allowed to delete this account',
+      );
+    }
+
+    await this.userService.deleteUser(userId);
+    return { message: 'Your account have been deleted successfully' };
   }
 }
