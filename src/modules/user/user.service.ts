@@ -16,7 +16,7 @@ export class UserService {
 
   async createUser(dto: CreateUserDto): Promise<User> {
     const user = await this.userModel.create({
-      name: this.generateUserName(dto.email),
+      name: dto.name || this.generateUserName(dto.email),
       email: dto.email.toLowerCase(),
       password: await this.hashService.hash(dto.password),
     });
@@ -33,10 +33,15 @@ export class UserService {
   }
 
   async findOneLeanById(id: string): Promise<UserType | null> {
-    const user = (await this.userModel
-      .findOne({ _id: id })
-      .lean()) as UserType | null;
+    const user = (await this.userModel.findById(id).lean()) as UserType | null;
     return user;
+  }
+
+  async updateUser(
+    id: string,
+    update?: Partial<UserType>,
+  ): Promise<User | null> {
+    return this.userModel.findByIdAndUpdate(id, update, { new: true }).exec();
   }
 
   private generateUserName(email: string): string {

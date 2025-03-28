@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Post,
@@ -30,6 +31,9 @@ export class AuthController {
       throw new UnauthorizedException(
         'This Email is linked with another account',
       );
+    }
+    if (typeof dto.name === 'string' && dto.name.length < 2) {
+      throw new BadRequestException('This Name is too short');
     }
 
     const createdUser = await this.userService.createUser(dto);
