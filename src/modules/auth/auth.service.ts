@@ -27,7 +27,7 @@ export class AuthService {
         this.configService.get('NODE_ENV') === 'production'
           ? this.configService.get('CLIENT_DOMAIN')
           : undefined,
-      maxAge: 15 * 60 * 1000, // 15m
+      maxAge: 24 * 60 * 60 * 1000, // 1d
     };
   }
 }
