@@ -8,14 +8,14 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
-import { ProThemeService } from './pro-theme.service';
-import { UserJwtType } from '../user/user.types';
+import { ProFontService } from './pro-font.service';
 import { UserService } from '../user/user.service';
+import { UserJwtType } from '../user/user.types';
 
-@Controller('pro-themes')
-export class ProThemeController {
+@Controller('pro-fonts')
+export class ProFontController {
   constructor(
-    private readonly proThemeService: ProThemeService,
+    private readonly proFontService: ProFontService,
     private readonly userService: UserService,
   ) {}
 
@@ -29,6 +29,10 @@ export class ProThemeController {
       throw new UnauthorizedException();
     }
 
-    return this.proThemeService.readThemes();
+    return {
+      src: this.proFontService.readFontsSrc(),
+      ui: this.proFontService.readFonts('pro-ui-font-data.json'),
+      reading: this.proFontService.readFonts('pro-reading-font-data.json'),
+    };
   }
 }

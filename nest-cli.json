@@ -4,6 +4,6 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "assets": ["modules/pro-theme/*.json"]
+    "assets": ["modules/pro-theme/*.json", "modules/pro-font/*.json"]
   }
 }

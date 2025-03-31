@@ -1,0 +1,11 @@
+{
+  "merri-weather": {
+    "reading-font": "'Merriweather', serif"
+  },
+  "lora": {
+    "reading-font": "'Lora', serif"
+  },
+  "roboto": {
+    "reading-font": "'Roboto', sans-serif"
+  }
+}

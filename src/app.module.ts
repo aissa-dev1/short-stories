@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProThemeModule } from './modules/pro-theme/pro-theme.module';
+import { ProFontModule } from './modules/pro-font/pro-font.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ProThemeModule } from './modules/pro-theme/pro-theme.module';
     UserModule,
     AuthModule,
     ProThemeModule,
+    ProFontModule,
   ],
   controllers: [AppController],
   providers: [AppService],
