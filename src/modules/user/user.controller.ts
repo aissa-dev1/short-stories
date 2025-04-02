@@ -7,11 +7,13 @@ import {
   Param,
   Post,
   Req,
+  Res,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Request, Response } from 'express';
+import jsPDF from 'jspdf';
 
 import { UserJwtType } from './user.types';
 import { UserService } from './user.service';
@@ -124,6 +126,32 @@ export class UserController {
       password: await this.hashService.hash(dto.newPassword),
     });
     return { message: 'Your password have been edited successfully' };
+  }
+
+  // TODO: This needs to be deleted
+  @Post('generate-pdf')
+  @UseGuards(AuthGuard('jwt'))
+  async getPdf(@Req() req: Request, @Res() res: Response) {
+    const userId = (req.user as UserJwtType).id;
+    const user = await this.userService.findOneLeanById(userId);
+
+    if (!user) {
+      throw new NotFoundException('No user found');
+    }
+
+    const doc = new jsPDF();
+
+    doc.text(`Hello ${user.name}`, 10, 10);
+
+    const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=example.pdf',
+      'Content-Length': pdfBuffer.length,
+    });
+
+    res.end(pdfBuffer);
   }
 
   @Delete(':id')
