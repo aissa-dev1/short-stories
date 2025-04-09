@@ -8,12 +8,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 
 import { SignInDto, SignUpDto } from './auth.dto';
 import { UserService } from '../user/user.service';
 import { HashService } from '../common/hash/hash.service';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -63,7 +63,7 @@ export class AuthController {
   }
 
   @Post('sign-out')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   signOut(@Res() res: Response) {
     res.clearCookie('token');
     res.json({ message: 'Signed out successfully' });

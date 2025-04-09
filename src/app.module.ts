@@ -8,6 +8,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProThemeModule } from './modules/pro-theme/pro-theme.module';
 import { ProFontModule } from './modules/pro-font/pro-font.module';
+import { StoryModule } from './modules/story/story.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ProFontModule } from './modules/pro-font/pro-font.module';
     AuthModule,
     ProThemeModule,
     ProFontModule,
+    StoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,4 @@
-export type UserPlanType = 'free' | 'pro';
+import { UserPlan } from 'src/common/constants/user-plan.constant';
 
 export type UserRoleType = 'user' | 'admin';
 
@@ -7,12 +7,12 @@ export interface UserType {
   name: string;
   email: string;
   password?: string;
-  plan: UserPlanType;
+  plan: UserPlan;
   role: UserRoleType;
   createdAt?: number;
   updatedAt?: number;
 }
 
-export interface UserJwtType {
+export interface CurrentUserType {
   id: string;
 }

@@ -1,34 +1,16 @@
-import {
-  Controller,
-  Get,
-  Req,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 
 import { ProThemeService } from './pro-theme.service';
-import { UserJwtType } from '../user/user.types';
-import { UserService } from '../user/user.service';
+import { ProGuard } from 'src/common/guards/pro.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('pro-themes')
 export class ProThemeController {
-  constructor(
-    private readonly proThemeService: ProThemeService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly proThemeService: ProThemeService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
-  async getAll(@Req() req: Request) {
-    const userId = (req.user as UserJwtType).id;
-    const user = await this.userService.findOneLeanById(userId);
-
-    if (!user || user.plan !== 'pro') {
-      throw new UnauthorizedException();
-    }
-
+  @UseGuards(JwtAuthGuard, ProGuard)
+  getAll() {
     return this.proThemeService.readThemes();
   }
 }

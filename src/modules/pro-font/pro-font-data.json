@@ -1,0 +1,29 @@
+{
+  "src": [
+    "https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap",
+    "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+  ],
+  "ui": {
+    "merri-weather": {
+      "ui-font": "'Merriweather', serif"
+    },
+    "lora": {
+      "ui-font": "'Lora', serif"
+    },
+    "roboto": {
+      "ui-font": "'Roboto', sans-serif"
+    }
+  },
+  "reading": {
+    "merri-weather": {
+      "reading-font": "'Merriweather', serif"
+    },
+    "lora": {
+      "reading-font": "'Lora', serif"
+    },
+    "roboto": {
+      "reading-font": "'Roboto', sans-serif"
+    }
+  }
+}

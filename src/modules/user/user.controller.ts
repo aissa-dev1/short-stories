@@ -6,19 +6,19 @@ import {
   NotFoundException,
   Param,
   Post,
-  Req,
   Res,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import jsPDF from 'jspdf';
 
-import { UserJwtType } from './user.types';
 import { UserService } from './user.service';
 import { ChangePasswordDto, EditEmailDto, EditNameDto } from './user.dto';
 import { HashService } from '../common/hash/hash.service';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { CurrentUserType } from './user.types';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UserController {
@@ -28,10 +28,9 @@ export class UserController {
   ) {}
 
   @Get('profile')
-  @UseGuards(AuthGuard('jwt'))
-  async getProfile(@Req() req: Request) {
-    const userId = (req.user as UserJwtType).id;
-    const user = await this.userService.findOneLeanById(userId);
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@CurrentUser() currentUser: CurrentUserType) {
+    const user = await this.userService.findOneLeanById(currentUser.id);
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -41,10 +40,9 @@ export class UserController {
   }
 
   @Get('status')
-  @UseGuards(AuthGuard('jwt'))
-  async getStatus(@Req() req: Request) {
-    const userId = (req.user as UserJwtType).id;
-    const user = await this.userService.findOneLeanById(userId);
+  @UseGuards(JwtAuthGuard)
+  async getStatus(@CurrentUser() currentUser: CurrentUserType) {
+    const user = await this.userService.findOneLeanById(currentUser.id);
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -54,10 +52,12 @@ export class UserController {
   }
 
   @Post('edit-name')
-  @UseGuards(AuthGuard('jwt'))
-  async editName(@Body() dto: EditNameDto, @Req() req: Request) {
-    const userId = (req.user as UserJwtType).id;
-    const user = await this.userService.findOneLeanById(userId);
+  @UseGuards(JwtAuthGuard)
+  async editName(
+    @CurrentUser() currentUser: CurrentUserType,
+    @Body() dto: EditNameDto,
+  ) {
+    const user = await this.userService.findOneLeanById(currentUser.id);
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -66,17 +66,19 @@ export class UserController {
       return { message: 'This is already your current name' };
     }
 
-    await this.userService.updateUser(userId, {
+    await this.userService.updateUser(currentUser.id, {
       name: dto.name,
     });
     return { message: 'Your name have been edited successfully' };
   }
 
   @Post('edit-email')
-  @UseGuards(AuthGuard('jwt'))
-  async editEmail(@Body() dto: EditEmailDto, @Req() req: Request) {
-    const userId = (req.user as UserJwtType).id;
-    const user = await this.userService.findOneLeanById(userId);
+  @UseGuards(JwtAuthGuard)
+  async editEmail(
+    @Body() dto: EditEmailDto,
+    @CurrentUser() currentUser: CurrentUserType,
+  ) {
+    const user = await this.userService.findOneLeanById(currentUser.id);
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -98,17 +100,19 @@ export class UserController {
       );
     }
 
-    await this.userService.updateUser(userId, {
+    await this.userService.updateUser(currentUser.id, {
       email: dto.newEmail,
     });
     return { message: 'Your email have been edited successfully' };
   }
 
   @Post('change-password')
-  @UseGuards(AuthGuard('jwt'))
-  async changePassword(@Body() dto: ChangePasswordDto, @Req() req: Request) {
-    const userId = (req.user as UserJwtType).id;
-    const user = await this.userService.findOneLeanByIdWithPass(userId);
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Body() dto: ChangePasswordDto,
+    @CurrentUser() currentUser: CurrentUserType,
+  ) {
+    const user = await this.userService.findOneLeanByIdWithPass(currentUser.id);
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -122,7 +126,7 @@ export class UserController {
       return { message: 'This is your current password' };
     }
 
-    await this.userService.updateUser(userId, {
+    await this.userService.updateUser(currentUser.id, {
       password: await this.hashService.hash(dto.newPassword),
     });
     return { message: 'Your password have been edited successfully' };
@@ -130,10 +134,12 @@ export class UserController {
 
   // TODO: This needs to be deleted
   @Post('generate-pdf')
-  @UseGuards(AuthGuard('jwt'))
-  async getPdf(@Req() req: Request, @Res() res: Response) {
-    const userId = (req.user as UserJwtType).id;
-    const user = await this.userService.findOneLeanById(userId);
+  @UseGuards(JwtAuthGuard)
+  async getPdf(
+    @CurrentUser() currentUser: CurrentUserType,
+    @Res() res: Response,
+  ) {
+    const user = await this.userService.findOneLeanById(currentUser.id);
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -155,21 +161,23 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'))
-  async deleteOne(@Param('id') id: string, @Req() req: Request) {
-    const userId = (req.user as UserJwtType).id;
-    const user = await this.userService.findOneLeanById(userId);
+  @UseGuards(JwtAuthGuard)
+  async deleteOne(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: CurrentUserType,
+  ) {
+    const user = await this.userService.findOneLeanById(currentUser.id);
 
     if (!user) {
       throw new NotFoundException('No user found');
     }
-    if (id !== userId) {
+    if (id !== currentUser.id) {
       throw new UnauthorizedException(
         'You are not allowed to delete this account',
       );
     }
 
-    await this.userService.deleteUser(userId);
+    await this.userService.deleteUser(currentUser.id);
     return { message: 'Your account have been deleted successfully' };
   }
 }

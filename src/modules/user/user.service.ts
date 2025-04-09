@@ -24,6 +24,7 @@ export class UserService {
     return user;
   }
 
+  // TODO: This needs to be renamed (Add withPass)
   async findOneLeanByEmail(email: string): Promise<UserType | null> {
     const user = (await this.userModel
       .findOne({ email: email.toLowerCase() })
