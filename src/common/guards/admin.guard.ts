@@ -16,7 +16,9 @@ export class AdminGuard implements CanActivate {
     }
 
     const currentUser = request.user as CurrentUserType;
-    const user = await this.userService.findOneLeanById(currentUser.id);
+    const user = await this.userService.findOneLean({
+      _id: currentUser.id,
+    });
 
     if (!user || user.role !== 'admin') {
       return false;

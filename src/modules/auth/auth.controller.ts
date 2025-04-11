@@ -25,7 +25,9 @@ export class AuthController {
 
   @Post('sign-up')
   async signUp(@Body() dto: SignUpDto, @Res() res: Response) {
-    const user = await this.userService.findOneLeanByEmail(dto.email);
+    const user = await this.userService.findOneLean({
+      email: dto.email.toLowerCase(),
+    });
 
     if (user) {
       throw new UnauthorizedException(
@@ -46,7 +48,9 @@ export class AuthController {
 
   @Post('sign-in')
   async signIn(@Body() dto: SignInDto, @Res() res: Response) {
-    const user = await this.userService.findOneLeanByEmail(dto.email);
+    const user = await this.userService.findOneLeanWithPass({
+      email: dto.email.toLowerCase(),
+    });
 
     if (
       !user ||

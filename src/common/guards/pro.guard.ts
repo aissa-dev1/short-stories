@@ -3,6 +3,7 @@ import { Request } from 'express';
 
 import { UserService } from 'src/modules/user/user.service';
 import { CurrentUserType } from 'src/modules/user/user.types';
+import { UserPlan } from '../constants/user-plan.constant';
 
 @Injectable()
 export class ProGuard implements CanActivate {
@@ -16,9 +17,11 @@ export class ProGuard implements CanActivate {
     }
 
     const currentUser = request.user as CurrentUserType;
-    const user = await this.userService.findOneLeanById(currentUser.id);
+    const user = await this.userService.findOneLean({
+      _id: currentUser.id,
+    });
 
-    if (!user || user.plan !== 'pro') {
+    if (!user || user.plan !== UserPlan.Pro) {
       return false;
     }
 

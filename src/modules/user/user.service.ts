@@ -14,6 +14,20 @@ export class UserService {
     private readonly hashService: HashService,
   ) {}
 
+  async findOneLean(filter: Partial<UserType> = {}): Promise<UserType | null> {
+    return this.userModel.findOne(filter).lean<UserType>().exec();
+  }
+
+  async findOneLeanWithPass(
+    filter: Partial<UserType> = {},
+  ): Promise<UserType | null> {
+    return this.userModel
+      .findOne(filter)
+      .select('+password')
+      .lean<UserType>()
+      .exec();
+  }
+
   async createUser(dto: CreateUserDto): Promise<User> {
     const user = await this.userModel.create({
       name: dto.name || this.generateUserName(dto.email),
@@ -21,28 +35,6 @@ export class UserService {
       password: await this.hashService.hash(dto.password),
     });
     await user.save();
-    return user;
-  }
-
-  // TODO: This needs to be renamed (Add withPass)
-  async findOneLeanByEmail(email: string): Promise<UserType | null> {
-    const user = (await this.userModel
-      .findOne({ email: email.toLowerCase() })
-      .select('+password')
-      .lean()) as UserType | null;
-    return user;
-  }
-
-  async findOneLeanById(id: string): Promise<UserType | null> {
-    const user = (await this.userModel.findById(id).lean()) as UserType | null;
-    return user;
-  }
-
-  async findOneLeanByIdWithPass(id: string): Promise<UserType | null> {
-    const user = (await this.userModel
-      .findById(id)
-      .select('+password')
-      .lean()) as UserType | null;
     return user;
   }
 

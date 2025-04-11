@@ -1,4 +1,13 @@
-import { IsArray, IsEnum, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+  Min,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
 
 import { StoryGenre } from './story.constants';
 import { UserPlan } from 'src/common/constants/user-plan.constant';
@@ -32,4 +41,28 @@ export class CreateStoryDto {
   @IsOptional()
   @IsEnum(UserPlan, { message: 'Invalid plan' })
   plan?: UserPlan;
+}
+
+export class GetLibraryStoriesDto {
+  @IsOptional()
+  @Transform(({ value }) => (value !== undefined ? Number(value) : value))
+  @IsNumber()
+  @Min(0)
+  skip?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => (value !== undefined ? Number(value) : value))
+  @IsNumber()
+  @Min(0)
+  limit?: number;
+
+  @IsOptional()
+  @IsString()
+  q: string;
+
+  @IsOptional()
+  plan?: UserPlan | string;
+
+  @IsOptional()
+  genre?: StoryGenre | string;
 }

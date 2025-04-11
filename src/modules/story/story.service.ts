@@ -3,13 +3,42 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Story } from './story.model';
-import { CreateStoryDto } from './story.dto';
+import { CreateStoryDto, GetLibraryStoriesDto } from './story.dto';
+import { StoryType } from './story.types';
+import {
+  ALL_GENRES,
+  ALL_PLANS,
+  PAGINATION_LIMIT,
+} from 'src/common/constants/filters.constant';
 
 @Injectable()
 export class StoryService {
   constructor(
     @InjectModel(Story.name) private readonly storyModel: Model<Story>,
   ) {}
+
+  findAllLean(filter: Partial<StoryType> = {}): Promise<StoryType[]> {
+    return this.storyModel.find(filter).lean<StoryType[]>().exec();
+  }
+
+  async findAllLeanPaginated(
+    filter: Partial<StoryType> = {},
+    skip = 0,
+    limit = PAGINATION_LIMIT,
+  ): Promise<{ stories: StoryType[]; count: number }> {
+    const stories = await this.storyModel
+      .find(filter)
+      .skip(skip)
+      .limit(limit)
+      .lean<StoryType[]>()
+      .exec();
+    const count = await this.storyModel.countDocuments(filter);
+    return { stories, count };
+  }
+
+  findOneLean(filter: Partial<StoryType> = {}): Promise<StoryType | null> {
+    return this.storyModel.findOne(filter).lean<StoryType>().exec();
+  }
 
   async createStory(dto: CreateStoryDto, userId: any): Promise<Story> {
     const story = await this.storyModel.create({
@@ -18,5 +47,24 @@ export class StoryService {
     });
     await story.save();
     return story;
+  }
+
+  deleteAll() {
+    return this.storyModel.deleteMany();
+  }
+
+  buildLibraryStoriesFilters(
+    dto: GetLibraryStoriesDto,
+  ): Record<string, string> {
+    const filters = {};
+
+    if (dto.plan && dto.plan.toLowerCase() !== ALL_PLANS) {
+      filters['plan'] = dto.plan.toLowerCase();
+    }
+    if (dto.genre && dto.genre.toLowerCase() !== ALL_GENRES) {
+      filters['genre'] = dto.genre.toLowerCase();
+    }
+
+    return filters;
   }
 }

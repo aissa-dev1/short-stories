@@ -30,7 +30,9 @@ export class UserController {
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   async getProfile(@CurrentUser() currentUser: CurrentUserType) {
-    const user = await this.userService.findOneLeanById(currentUser.id);
+    const user = await this.userService.findOneLean({
+      _id: currentUser.id,
+    });
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -42,7 +44,9 @@ export class UserController {
   @Get('status')
   @UseGuards(JwtAuthGuard)
   async getStatus(@CurrentUser() currentUser: CurrentUserType) {
-    const user = await this.userService.findOneLeanById(currentUser.id);
+    const user = await this.userService.findOneLean({
+      _id: currentUser.id,
+    });
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -57,7 +61,9 @@ export class UserController {
     @CurrentUser() currentUser: CurrentUserType,
     @Body() dto: EditNameDto,
   ) {
-    const user = await this.userService.findOneLeanById(currentUser.id);
+    const user = await this.userService.findOneLean({
+      _id: currentUser.id,
+    });
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -78,7 +84,9 @@ export class UserController {
     @Body() dto: EditEmailDto,
     @CurrentUser() currentUser: CurrentUserType,
   ) {
-    const user = await this.userService.findOneLeanById(currentUser.id);
+    const user = await this.userService.findOneLean({
+      _id: currentUser.id,
+    });
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -90,9 +98,9 @@ export class UserController {
       return { message: 'This is your current email' };
     }
 
-    const userWithEmail = await this.userService.findOneLeanByEmail(
-      dto.newEmail,
-    );
+    const userWithEmail = await this.userService.findOneLean({
+      email: dto.newEmail,
+    });
 
     if (userWithEmail) {
       throw new UnauthorizedException(
@@ -112,7 +120,9 @@ export class UserController {
     @Body() dto: ChangePasswordDto,
     @CurrentUser() currentUser: CurrentUserType,
   ) {
-    const user = await this.userService.findOneLeanByIdWithPass(currentUser.id);
+    const user = await this.userService.findOneLeanWithPass({
+      _id: currentUser.id,
+    });
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -139,7 +149,9 @@ export class UserController {
     @CurrentUser() currentUser: CurrentUserType,
     @Res() res: Response,
   ) {
-    const user = await this.userService.findOneLeanById(currentUser.id);
+    const user = await this.userService.findOneLean({
+      _id: currentUser.id,
+    });
 
     if (!user) {
       throw new NotFoundException('No user found');
@@ -166,7 +178,9 @@ export class UserController {
     @Param('id') id: string,
     @CurrentUser() currentUser: CurrentUserType,
   ) {
-    const user = await this.userService.findOneLeanById(currentUser.id);
+    const user = await this.userService.findOneLean({
+      _id: currentUser.id,
+    });
 
     if (!user) {
       throw new NotFoundException('No user found');
