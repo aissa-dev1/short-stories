@@ -3,9 +3,10 @@ import { Request } from 'express';
 
 import { UserService } from 'src/modules/user/user.service';
 import { CurrentUserType } from 'src/modules/user/user.types';
+import { UserRole } from '../user.constants';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class UserAdminGuard implements CanActivate {
   constructor(private readonly userService: UserService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -20,7 +21,7 @@ export class AdminGuard implements CanActivate {
       _id: currentUser.id,
     });
 
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role !== UserRole.Admin) {
       return false;
     }
 

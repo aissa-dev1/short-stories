@@ -16,9 +16,9 @@ import jsPDF from 'jspdf';
 import { UserService } from './user.service';
 import { ChangePasswordDto, EditEmailDto, EditNameDto } from './user.dto';
 import { HashService } from '../common/hash/hash.service';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { CurrentUserType } from './user.types';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { CurrentUser } from './decorators/current-user.decorator';
 
 @Controller('users')
 export class UserController {

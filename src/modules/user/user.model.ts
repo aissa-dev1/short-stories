@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-import { UserRoleType } from './user.types';
-import { UserPlan } from 'src/common/constants/user-plan.constant';
+import { UserPlan, UserRole } from './user.constants';
 
 @Schema({ collection: 'users', timestamps: true })
 export class User extends Document {
@@ -19,7 +18,7 @@ export class User extends Document {
   plan: UserPlan;
 
   @Prop({ default: 'user' })
-  role: UserRoleType;
+  role: UserRole;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

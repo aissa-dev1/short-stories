@@ -3,10 +3,10 @@ import { Request } from 'express';
 
 import { UserService } from 'src/modules/user/user.service';
 import { CurrentUserType } from 'src/modules/user/user.types';
-import { UserPlan } from '../constants/user-plan.constant';
+import { UserPlan } from '../user.constants';
 
 @Injectable()
-export class ProGuard implements CanActivate {
+export class UserProGuard implements CanActivate {
   constructor(private readonly userService: UserService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -21,7 +21,7 @@ export class ProGuard implements CanActivate {
       _id: currentUser.id,
     });
 
-    if (!user || user.plan !== UserPlan.Pro) {
+    if (!user || (user.plan as UserPlan) !== UserPlan.Pro) {
       return false;
     }
 

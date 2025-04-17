@@ -1,4 +1,4 @@
-import { UserPlan } from 'src/common/constants/user-plan.constant';
+import { UserPlan } from '../user/user.constants';
 
 export interface StoryType {
   _id: unknown;

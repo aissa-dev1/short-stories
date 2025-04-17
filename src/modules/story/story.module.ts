@@ -5,7 +5,7 @@ import { StoryController } from './story.controller';
 import { StoryService } from './story.service';
 import { Story, StorySchema } from './story.model';
 import { UserModule } from '../user/user.module';
-import { AdminGuard } from 'src/common/guards/admin.guard';
+import { UserAdminGuard } from '../user/guards/user-admin.guard';
 
 @Module({
   imports: [
@@ -13,6 +13,6 @@ import { AdminGuard } from 'src/common/guards/admin.guard';
     UserModule,
   ],
   controllers: [StoryController],
-  providers: [StoryService, AdminGuard],
+  providers: [StoryService, UserAdminGuard],
 })
 export class StoryModule {}

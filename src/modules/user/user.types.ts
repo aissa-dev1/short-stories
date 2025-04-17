@@ -1,6 +1,4 @@
-import { UserPlan } from 'src/common/constants/user-plan.constant';
-
-export type UserRoleType = 'user' | 'admin';
+import { UserPlan, UserRole } from './user.constants';
 
 export interface UserType {
   _id: unknown;
@@ -8,7 +6,7 @@ export interface UserType {
   email: string;
   password?: string;
   plan: UserPlan;
-  role: UserRoleType;
+  role: UserRole;
   createdAt: Date;
   updatedAt: Date;
 }

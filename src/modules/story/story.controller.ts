@@ -4,7 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  InternalServerErrorException,
   Param,
   Post,
   Query,
@@ -14,13 +13,13 @@ import {
 import { CreateStoryDto, GetLibraryStoriesDto } from './story.dto';
 import { StoryService } from './story.service';
 import { CurrentUserType } from '../user/user.types';
-import { AdminGuard } from 'src/common/guards/admin.guard';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { MarkForDeletion } from 'src/common/decorators/mark-for-deletion.decorator';
 import { MarkForDeletionReason } from 'src/common/constants/mark-for-deletion-reason.constant';
 import { StoryGenre } from './story.constants';
-import { UserPlan } from 'src/common/constants/user-plan.constant';
+import { UserAdminGuard } from '../user/guards/user-admin.guard';
+import { CurrentUser } from '../user/decorators/current-user.decorator';
+import { UserPlan } from '../user/user.constants';
 
 @Controller('stories')
 export class StoryController {
@@ -55,7 +54,7 @@ export class StoryController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard, UserAdminGuard)
   async createStory(
     @CurrentUser() currentUser: CurrentUserType,
     @Body() dto: CreateStoryDto,
@@ -65,7 +64,7 @@ export class StoryController {
   }
 
   @Post('fake-stories')
-  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard, UserAdminGuard)
   @MarkForDeletion(MarkForDeletionReason.Testing)
   async createFakeStories(@CurrentUser() currentUser: CurrentUserType) {
     const chars = 'azertyuiopqsdfghjklmwxcvbn123456789';
@@ -85,7 +84,7 @@ export class StoryController {
         coverImage: 'short-story-cover.jpeg',
         genre:
           Math.random() > 0.5 ? [StoryGenre.Adventure] : [StoryGenre.Mystery],
-        plan: Math.random() > 0.5 ? UserPlan.Free : UserPlan.Pro,
+        plan: UserPlan.Free,
       });
       console.log(`Story ${i} done`);
     }
@@ -93,7 +92,7 @@ export class StoryController {
   }
 
   @Delete()
-  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard, UserAdminGuard)
   @MarkForDeletion(MarkForDeletionReason.Testing)
   async deleteAll() {
     await this.storyService.deleteAll();

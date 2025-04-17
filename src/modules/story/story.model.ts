@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
-import { UserPlan } from 'src/common/constants/user-plan.constant';
+import { UserPlan } from '../user/user.constants';
 
 @Schema({ collection: 'stories', timestamps: true })
 export class Story extends Document {

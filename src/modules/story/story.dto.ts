@@ -10,7 +10,7 @@ import {
 import { Transform } from 'class-transformer';
 
 import { StoryGenre } from './story.constants';
-import { UserPlan } from 'src/common/constants/user-plan.constant';
+import { UserPlan } from '../user/user.constants';
 
 export class CreateStoryDto {
   @Length(1, undefined, { message: 'Story name is too short' })
