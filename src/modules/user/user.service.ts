@@ -14,11 +14,11 @@ export class UserService {
     private readonly hashService: HashService,
   ) {}
 
-  async findOneLean(filter: Partial<UserType> = {}): Promise<UserType | null> {
+  findOneLean(filter: Partial<UserType> = {}): Promise<UserType | null> {
     return this.userModel.findOne(filter).lean<UserType>().exec();
   }
 
-  async findOneLeanWithPass(
+  findOneLeanWithPass(
     filter: Partial<UserType> = {},
   ): Promise<UserType | null> {
     return this.userModel

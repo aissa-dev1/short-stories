@@ -1,7 +1,7 @@
 import { UserPlan, UserRole } from './user.constants';
 
 export interface UserType {
-  _id: unknown;
+  _id: any;
   name: string;
   email: string;
   password?: string;

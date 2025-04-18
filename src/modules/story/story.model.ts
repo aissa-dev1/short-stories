@@ -33,7 +33,7 @@ export class Story extends Document {
   @Prop({ default: 0 })
   downloads: number;
 
-  @Prop({ default: 'free' })
+  @Prop({ default: UserPlan.Free })
   plan: UserPlan;
 }
 

@@ -14,10 +14,10 @@ export class User extends Document {
   @Prop({ required: true, select: false })
   password: string;
 
-  @Prop({ default: 'free' })
+  @Prop({ default: UserPlan.Free })
   plan: UserPlan;
 
-  @Prop({ default: 'user' })
+  @Prop({ default: UserRole.User })
   role: UserRole;
 }
 

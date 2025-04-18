@@ -20,10 +20,14 @@ import { StoryGenre } from './story.constants';
 import { UserAdminGuard } from '../user/guards/user-admin.guard';
 import { CurrentUser } from '../user/decorators/current-user.decorator';
 import { UserPlan } from '../user/user.constants';
+import { StoryContentService } from '../story-content/story-content.service';
 
 @Controller('stories')
 export class StoryController {
-  constructor(private readonly storyService: StoryService) {}
+  constructor(
+    private readonly storyService: StoryService,
+    private readonly storyContentService: StoryContentService,
+  ) {}
 
   @Get('library')
   async getLibraryStories(@Query() dto: GetLibraryStoriesDto) {
@@ -59,8 +63,8 @@ export class StoryController {
     @CurrentUser() currentUser: CurrentUserType,
     @Body() dto: CreateStoryDto,
   ) {
-    await this.storyService.createStory(dto, currentUser.id);
-    return { message: `Story '${dto.name}' created successfully` };
+    const story = await this.storyService.createStory(dto, currentUser.id);
+    return { message: `Story '${story.name}' created successfully` };
   }
 
   @Post('fake-stories')

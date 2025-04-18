@@ -41,6 +41,11 @@ export class CreateStoryDto {
   @IsOptional()
   @IsEnum(UserPlan, { message: 'Invalid plan' })
   plan?: UserPlan;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  content?: string;
 }
 
 export class GetLibraryStoriesDto {

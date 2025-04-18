@@ -1,8 +1,8 @@
 import { UserPlan } from '../user/user.constants';
 
 export interface StoryType {
-  _id: unknown;
-  userId: unknown;
+  _id: any;
+  userId: any;
   name: string;
   description: string;
   about: string[];

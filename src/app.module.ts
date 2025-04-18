@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProThemeModule } from './modules/pro-theme/pro-theme.module';
 import { ProFontModule } from './modules/pro-font/pro-font.module';
 import { StoryModule } from './modules/story/story.module';
+import { StoryContentModule } from './modules/story-content/story-content.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { StoryModule } from './modules/story/story.module';
     ProThemeModule,
     ProFontModule,
     StoryModule,
+    StoryContentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
