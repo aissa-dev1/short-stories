@@ -16,7 +16,10 @@ export class StoryContentService {
   findOneLean(
     filter: Partial<StoryContentType> = {},
   ): Promise<StoryContentType | null> {
-    return this.storyContentModel.findOne(filter);
+    return this.storyContentModel
+      .findOne(filter)
+      .lean<StoryContentType>()
+      .exec();
   }
 
   async createStoryContent(dto: CreateStoryContentDto): Promise<StoryContent> {

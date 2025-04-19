@@ -77,6 +77,10 @@ export class StoryController {
 
       return { success: true, data: story };
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
       throw new BadRequestException({
         success: false,
         message: 'Failed to fetch story',
@@ -93,7 +97,7 @@ export class StoryController {
     try {
       const story = await this.storyService.createStory(dto, currentUser.id);
       await this.storyContentService.createStoryContent({
-        storyId: story._id,
+        storyId: String(story._id),
         content: dto.content,
       });
       return {
@@ -172,6 +176,10 @@ export class StoryController {
         message: 'Story have been deleted successfully',
       };
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+
       throw new BadRequestException({
         success: false,
         message: 'Failed to delete story',

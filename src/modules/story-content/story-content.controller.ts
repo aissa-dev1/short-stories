@@ -1,4 +1,10 @@
-import { BadRequestException, Controller, Get, Param } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+} from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
 
 import { StoryContentService } from './story-content.service';
@@ -20,11 +26,23 @@ export class StoryContentController {
       const storyContent = await this.storyContentService.findOneLean({
         storyId,
       });
+
+      if (!storyContent) {
+        throw new NotFoundException({
+          success: false,
+          message: 'Story content not found',
+        });
+      }
+
       return {
         success: true,
         data: storyContent,
       };
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
       throw new BadRequestException({
         success: false,
         message: 'Failed to fetch story content',
