@@ -7,5 +7,5 @@ export class CreateStoryContentDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  content?: string;
+  content?: string[];
 }

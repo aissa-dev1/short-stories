@@ -4,11 +4,14 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post,
   Query,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { isValidObjectId } from 'mongoose';
 
 import { CreateStoryDto, GetLibraryStoriesDto } from './story.dto';
 import { StoryService } from './story.service';
@@ -41,7 +44,7 @@ export class StoryController {
         dto.limit,
       );
       return { success: true, data: libraryStories };
-    } catch (error: any) {
+    } catch (error) {
       throw new BadRequestException({
         sucess: false,
         message: 'Failed to fetch library stories',
@@ -50,11 +53,35 @@ export class StoryController {
   }
 
   @Get(':slugAndId')
-  findOneBySlugAndId(@Param('slugAndId') slugAndId: string) {
+  async findOneBySlugAndId(@Param('slugAndId') slugAndId: string) {
     const id = slugAndId.split('-').pop() || '';
-    return this.storyService.findOneLean({
-      _id: id,
-    });
+
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Invalid story ID format',
+      });
+    }
+
+    try {
+      const story = await this.storyService.findOneLean({
+        _id: id,
+      });
+
+      if (!story) {
+        throw new NotFoundException({
+          success: false,
+          message: 'Story not found',
+        });
+      }
+
+      return { success: true, data: story };
+    } catch (error) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to fetch story',
+      });
+    }
   }
 
   @Post()
@@ -63,8 +90,22 @@ export class StoryController {
     @CurrentUser() currentUser: CurrentUserType,
     @Body() dto: CreateStoryDto,
   ) {
-    const story = await this.storyService.createStory(dto, currentUser.id);
-    return { message: `Story '${story.name}' created successfully` };
+    try {
+      const story = await this.storyService.createStory(dto, currentUser.id);
+      await this.storyContentService.createStoryContent({
+        storyId: story._id,
+        content: dto.content,
+      });
+      return {
+        success: true,
+        message: `Story '${story.name}' created successfully`,
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to create this story',
+      });
+    }
   }
 
   @Post('fake-stories')
@@ -82,24 +123,70 @@ export class StoryController {
     }
 
     for (let i = 0; i < 50; i++) {
+      const storyName = getRandomName();
       await this.createStory(currentUser, {
-        name: getRandomName(),
+        name: storyName,
         description: `Story description ${i + 1}`,
         coverImage: 'short-story-cover.jpeg',
         genre:
           Math.random() > 0.5 ? [StoryGenre.Adventure] : [StoryGenre.Mystery],
         plan: UserPlan.Free,
+        content: ['Hello world!', `Hello ${storyName}`],
       });
       console.log(`Story ${i} done`);
     }
     return { message: 'done' };
   }
 
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async deleteStory(
+    @CurrentUser() currentUser: CurrentUserType,
+    @Param('id') id: string,
+  ) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Invalid story ID format',
+      });
+    }
+
+    try {
+      const story = await this.storyService.findOneLean({
+        userId: currentUser.id,
+      });
+
+      if (!story) {
+        throw new UnauthorizedException({
+          success: false,
+          message: `You don't have permission to delete this story`,
+        });
+      }
+
+      await Promise.all([
+        this.storyService.deleteOne({ _id: id }),
+        this.storyContentService.deleteOne({ storyId: id }),
+      ]);
+      return {
+        success: true,
+        message: 'Story have been deleted successfully',
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to delete story',
+      });
+    }
+  }
+
   @Delete()
   @UseGuards(JwtAuthGuard, UserAdminGuard)
   @MarkForDeletion(MarkForDeletionReason.Testing)
   async deleteAll() {
-    await this.storyService.deleteAll();
+    await Promise.all([
+      this.storyService.deleteAll(),
+      this.storyContentService.deleteAll(),
+    ]);
     return { message: 'done' };
   }
 }

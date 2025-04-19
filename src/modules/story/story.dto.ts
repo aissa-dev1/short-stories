@@ -45,7 +45,7 @@ export class CreateStoryDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  content?: string;
+  content?: string[];
 }
 
 export class GetLibraryStoriesDto {

@@ -1,6 +1,7 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
+@Schema({ collection: 'story-contents', timestamps: true })
 export class StoryContent extends Document {
   @Prop({ required: true })
   storyId: mongoose.Types.ObjectId;

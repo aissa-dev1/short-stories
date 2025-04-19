@@ -12,6 +12,9 @@ export class AuthCredentialsDto {
 
 export class SignUpDto extends AuthCredentialsDto {
   @IsOptional()
+  @Length(2, undefined, {
+    message: 'This Name is too short',
+  })
   name?: string;
 }
 
