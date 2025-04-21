@@ -13,6 +13,12 @@ export class StoryReviewService {
     private readonly storyReviewModel: Model<StoryReview>,
   ) {}
 
+  findAllLean(
+    filter: Partial<StoryReviewType> = {},
+  ): Promise<StoryReviewType[]> {
+    return this.storyReviewModel.find(filter).lean<StoryReviewType[]>().exec();
+  }
+
   findOneLean(
     filter: Partial<StoryReviewType> = {},
   ): Promise<StoryReviewType | null> {

@@ -4,6 +4,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { StoryReviewController } from './story-review.controller';
 import { StoryReviewService } from './story-review.service';
 import { StoryReview, StoryReviewSchema } from './story-review.model';
+import { UserModule } from '../user/user.module';
+import { StoryModule } from '../story/story.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { StoryReview, StoryReviewSchema } from './story-review.model';
         schema: StoryReviewSchema,
       },
     ]),
+    UserModule,
+    StoryModule,
   ],
   controllers: [StoryReviewController],
   providers: [StoryReviewService],

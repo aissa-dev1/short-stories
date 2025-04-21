@@ -5,3 +5,8 @@ export interface StoryReviewType {
   stars: number;
   comment: string;
 }
+
+export interface StoryReviewWithDetails extends StoryReviewType {
+  userName: string;
+  storyName: string;
+}

@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -11,10 +13,55 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { CurrentUser } from '../user/decorators/current-user.decorator';
 import { CurrentUserType } from '../user/user.types';
 import { CreateStoryReviewDto } from './story-review.dto';
+import { UserService } from '../user/user.service';
+import { StoryService } from '../story/story.service';
+import { StoryReviewWithDetails } from './story-review.types';
 
 @Controller('story-reviews')
 export class StoryReviewController {
-  constructor(private readonly storyReviewService: StoryReviewService) {}
+  constructor(
+    private readonly storyReviewService: StoryReviewService,
+    private readonly userService: UserService,
+    private readonly storyService: StoryService,
+  ) {}
+
+  @Get(':storyId')
+  async getStoryReviewsByStoryId(@Param('storyId') storyId: string) {
+    try {
+      let data: StoryReviewWithDetails[] = [];
+      const storyReviews = await this.storyReviewService.findAllLean({
+        storyId,
+      });
+      const story = await this.storyService.findOneLean({
+        _id: storyId,
+      });
+
+      for (const storyReview of storyReviews) {
+        const user = await this.userService.findOneLean({
+          _id: storyReview.userId,
+        });
+
+        data = [
+          ...data,
+          {
+            ...storyReview,
+            userName: user?.name || '',
+            storyName: story?.name || '',
+          },
+        ];
+      }
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to get story reviews',
+      });
+    }
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)

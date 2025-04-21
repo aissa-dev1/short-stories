@@ -16,5 +16,6 @@ import { StoryContentModule } from '../story-content/story-content.module';
   ],
   controllers: [StoryController],
   providers: [StoryService, UserAdminGuard],
+  exports: [StoryService],
 })
 export class StoryModule {}
