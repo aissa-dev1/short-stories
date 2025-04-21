@@ -126,7 +126,11 @@ export class StoryController {
       return name;
     }
 
-    for (let i = 0; i < 50; i++) {
+    const content: string[] = [];
+    for (let i = 0; i < 100; i++) {
+      content.push('Hello world! '.repeat(10));
+    }
+    for (let i = 0; i < 25; i++) {
       const storyName = getRandomName();
       await this.createStory(currentUser, {
         name: storyName,
@@ -135,7 +139,7 @@ export class StoryController {
         genre:
           Math.random() > 0.5 ? [StoryGenre.Adventure] : [StoryGenre.Mystery],
         plan: UserPlan.Free,
-        content: ['Hello world!', `Hello ${storyName}`],
+        content: [`Hello ${storyName} `.repeat(10), ...content],
       });
       console.log(`Story ${i} done`);
     }

@@ -12,6 +12,7 @@ import { ProThemeModule } from './modules/pro-theme/pro-theme.module';
 import { ProFontModule } from './modules/pro-font/pro-font.module';
 import { StoryModule } from './modules/story/story.module';
 import { StoryContentModule } from './modules/story-content/story-content.module';
+import { StoryReviewModule } from './modules/story-review/story-review.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { StoryContentModule } from './modules/story-content/story-content.module
     ProFontModule,
     StoryModule,
     StoryContentModule,
+    StoryReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
