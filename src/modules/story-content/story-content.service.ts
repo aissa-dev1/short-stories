@@ -23,10 +23,7 @@ export class StoryContentService {
   }
 
   async createStoryContent(dto: CreateStoryContentDto): Promise<StoryContent> {
-    const storyContent = await this.storyContentModel.create({
-      storyId: dto.storyId,
-      content: dto.content,
-    });
+    const storyContent = await this.storyContentModel.create(dto);
     await storyContent.save();
     return storyContent;
   }
