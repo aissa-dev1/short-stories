@@ -8,10 +8,13 @@ import {
   Param,
   Post,
   Query,
+  Res,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
+import jsPDF from 'jspdf';
+import { Response } from 'express';
 
 import { CreateStoryDto, GetLibraryStoriesDto } from './story.dto';
 import { StoryService } from './story.service';
@@ -142,10 +145,7 @@ export class StoryController {
 
   @Post('read/:id')
   @UseGuards(JwtAuthGuard)
-  async readStory(
-    @CurrentUser() currentUser: CurrentUserType,
-    @Param('id') id: string,
-  ) {
+  async readStory(@Param('id') id: string) {
     if (!isValidObjectId(id)) {
       throw new BadRequestException({
         success: false,
@@ -180,6 +180,63 @@ export class StoryController {
       throw new BadRequestException({
         success: false,
         message: 'Failed to read this story',
+      });
+    }
+  }
+
+  @Post('download/:id')
+  @UseGuards(JwtAuthGuard)
+  async downloadStory(@Param('id') id: string, @Res() res: Response) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Invalid story ID format',
+      });
+    }
+
+    try {
+      const story = await this.storyService.findOneLean({ _id: id });
+
+      if (!story) {
+        throw new NotFoundException({
+          success: false,
+          message: 'Story not found',
+        });
+      }
+
+      const doc = new jsPDF();
+
+      doc.text(`Story: ${story.name}`, 10, 10);
+
+      const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
+
+      await this.storyService.updateStory(id, {
+        downloads: story.downloads + 1,
+      });
+
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename=example.pdf',
+        'Content-Length': pdfBuffer.length,
+      });
+
+      res.end(
+        JSON.stringify({
+          success: true,
+          data: pdfBuffer,
+        }),
+      );
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to download this story',
       });
     }
   }

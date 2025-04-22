@@ -6,6 +6,7 @@ import { User } from './user.model';
 import { CreateUserDto } from './user.dto';
 import { HashService } from '../common/hash/hash.service';
 import { UserType } from './user.types';
+import { capitalize } from 'src/utils/capitalize';
 
 @Injectable()
 export class UserService {
@@ -47,6 +48,6 @@ export class UserService {
   }
 
   private generateUserName(email: string): string {
-    return email.split('@')[0] || 'Anonymous';
+    return capitalize(email.split('@')[0]) || 'Anonymous';
   }
 }
