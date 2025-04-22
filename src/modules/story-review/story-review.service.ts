@@ -36,4 +36,19 @@ export class StoryReviewService {
     await storyReview.save();
     return storyReview;
   }
+
+  async getStoryRating(storyId: any): Promise<number> {
+    const storyReviews = await this.storyReviewModel
+      .find({
+        storyId: typeof storyId === 'string' ? storyId : String(storyId),
+      })
+      .select('stars')
+      .lean<StoryReviewType[]>()
+      .exec();
+    return (
+      storyReviews.reduce((a, b) => {
+        return a + b.stars;
+      }, 0) / storyReviews.length || 0
+    );
+  }
 }

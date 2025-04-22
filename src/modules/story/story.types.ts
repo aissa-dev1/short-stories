@@ -15,3 +15,13 @@ export interface StoryType {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface LibraryStories {
+  stories: StoryType[];
+  count: number;
+}
+
+export interface LibraryStoriesWithRating {
+  stories: (StoryType & { rating: number })[];
+  count: number;
+}

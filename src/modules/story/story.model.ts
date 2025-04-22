@@ -3,7 +3,7 @@ import mongoose, { Document } from 'mongoose';
 
 import { UserPlan } from '../user/user.constants';
 
-@Schema({ collection: 'stories', timestamps: true })
+@Schema({ collection: 'stories', timestamps: true, versionKey: false })
 export class Story extends Document {
   @Prop({ required: true })
   userId: mongoose.Types.ObjectId;

@@ -4,7 +4,7 @@ import { DeleteResult, Model } from 'mongoose';
 
 import { Story } from './story.model';
 import { CreateStoryDto, GetLibraryStoriesDto } from './story.dto';
-import { StoryType } from './story.types';
+import { LibraryStories, StoryType } from './story.types';
 import {
   ALL_GENRES,
   ALL_PLANS,
@@ -25,14 +25,16 @@ export class StoryService {
     filter: Partial<StoryType> = {},
     skip = 0,
     limit = PAGINATION_LIMIT,
-  ): Promise<{ stories: StoryType[]; count: number }> {
-    const stories = await this.storyModel
-      .find(filter)
-      .skip(skip)
-      .limit(limit)
-      .lean<StoryType[]>()
-      .exec();
-    const count = await this.storyModel.countDocuments(filter);
+  ): Promise<LibraryStories> {
+    const [stories, count] = await Promise.all([
+      this.storyModel
+        .find(filter)
+        .skip(skip)
+        .limit(limit)
+        .lean<StoryType[]>()
+        .exec(),
+      this.storyModel.countDocuments(filter),
+    ]);
     return { stories, count };
   }
 

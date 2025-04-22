@@ -4,6 +4,8 @@ export interface StoryReviewType {
   storyId: any;
   stars: number;
   comment: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface StoryReviewWithDetails extends StoryReviewType {

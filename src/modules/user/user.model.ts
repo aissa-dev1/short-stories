@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 import { UserPlan, UserRole } from './user.constants';
 
-@Schema({ collection: 'users', timestamps: true })
+@Schema({ collection: 'users', timestamps: true, versionKey: false })
 export class User extends Document {
   @Prop()
   name: string;

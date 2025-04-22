@@ -29,12 +29,14 @@ export class StoryReviewController {
   async getStoryReviewsByStoryId(@Param('storyId') storyId: string) {
     try {
       let data: StoryReviewWithDetails[] = [];
-      const storyReviews = await this.storyReviewService.findAllLean({
-        storyId,
-      });
-      const story = await this.storyService.findOneLean({
-        _id: storyId,
-      });
+      const [story, storyReviews] = await Promise.all([
+        this.storyService.findOneLean({
+          _id: storyId,
+        }),
+        this.storyReviewService.findAllLean({
+          storyId,
+        }),
+      ]);
 
       for (const storyReview of storyReviews) {
         const user = await this.userService.findOneLean({

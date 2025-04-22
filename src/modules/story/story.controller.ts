@@ -24,12 +24,15 @@ import { UserAdminGuard } from '../user/guards/user-admin.guard';
 import { CurrentUser } from '../user/decorators/current-user.decorator';
 import { UserPlan } from '../user/user.constants';
 import { StoryContentService } from '../story-content/story-content.service';
+import { StoryReviewService } from '../story-review/story-review.service';
+import { LibraryStoriesWithRating } from './story.types';
 
 @Controller('stories')
 export class StoryController {
   constructor(
     private readonly storyService: StoryService,
     private readonly storyContentService: StoryContentService,
+    private readonly storyReviewService: StoryReviewService,
   ) {}
 
   @Get('library')
@@ -43,7 +46,23 @@ export class StoryController {
         dto.skip,
         dto.limit,
       );
-      return { success: true, data: libraryStories };
+      const data: LibraryStoriesWithRating = {
+        stories: [],
+        count: libraryStories.count,
+      };
+
+      for (const story of libraryStories.stories) {
+        const rating = await this.storyReviewService.getStoryRating(story._id);
+        data.stories = [
+          ...data.stories,
+          {
+            ...story,
+            rating,
+          },
+        ];
+      }
+
+      return { success: true, data };
     } catch (error) {
       throw new BadRequestException({
         sucess: false,
@@ -64,9 +83,12 @@ export class StoryController {
     }
 
     try {
-      const story = await this.storyService.findOneLean({
-        _id: id,
-      });
+      const [story, rating] = await Promise.all([
+        this.storyService.findOneLean({
+          _id: id,
+        }),
+        this.storyReviewService.getStoryRating(id),
+      ]);
 
       if (!story) {
         throw new NotFoundException({
@@ -75,7 +97,13 @@ export class StoryController {
         });
       }
 
-      return { success: true, data: story };
+      return {
+        success: true,
+        data: {
+          ...story,
+          rating,
+        },
+      };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { StoryReviewController } from './story-review.controller';
@@ -16,9 +16,10 @@ import { StoryModule } from '../story/story.module';
       },
     ]),
     UserModule,
-    StoryModule,
+    forwardRef(() => StoryModule),
   ],
   controllers: [StoryReviewController],
   providers: [StoryReviewService],
+  exports: [StoryReviewService],
 })
 export class StoryReviewModule {}
