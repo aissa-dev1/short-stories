@@ -140,6 +140,50 @@ export class StoryController {
     }
   }
 
+  @Post('read/:id')
+  @UseGuards(JwtAuthGuard)
+  async readStory(
+    @CurrentUser() currentUser: CurrentUserType,
+    @Param('id') id: string,
+  ) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Invalid story ID format',
+      });
+    }
+
+    try {
+      const story = await this.storyService.findOneLean({ _id: id });
+
+      if (!story) {
+        throw new NotFoundException({
+          success: false,
+          message: 'Story not found',
+        });
+      }
+
+      await this.storyService.updateStory(id, {
+        views: story.views + 1,
+      });
+      return {
+        success: true,
+      };
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to read this story',
+      });
+    }
+  }
+
   @Post('fake-stories')
   @UseGuards(JwtAuthGuard, UserAdminGuard)
   @MarkForDeletion(MarkForDeletionReason.Testing)

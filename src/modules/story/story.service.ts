@@ -51,6 +51,10 @@ export class StoryService {
     return story;
   }
 
+  updateStory(id: string, update?: Partial<StoryType>): Promise<Story | null> {
+    return this.storyModel.findByIdAndUpdate(id, update, { new: true }).exec();
+  }
+
   deleteAll() {
     return this.storyModel.deleteMany();
   }
