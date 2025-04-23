@@ -16,12 +16,16 @@ export interface StoryType {
   updatedAt: Date;
 }
 
+export interface StoryWithRatingType extends StoryType {
+  rating: number;
+}
+
 export interface LibraryStories {
   stories: StoryType[];
   count: number;
 }
 
 export interface LibraryStoriesWithRating {
-  stories: (StoryType & { rating: number })[];
+  stories: StoryWithRatingType[];
   count: number;
 }

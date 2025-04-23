@@ -21,6 +21,10 @@ export class StoryService {
     return this.storyModel.find(filter).lean<StoryType[]>().exec();
   }
 
+  async getFeaturedStories(): Promise<StoryType[]> {
+    return this.storyModel.aggregate([{ $sample: { size: 6 } }]);
+  }
+
   async findAllLeanPaginated(
     filter: Partial<StoryType> = {},
     skip = 0,

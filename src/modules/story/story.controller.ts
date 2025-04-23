@@ -28,7 +28,9 @@ import { CurrentUser } from '../user/decorators/current-user.decorator';
 import { UserPlan } from '../user/user.constants';
 import { StoryContentService } from '../story-content/story-content.service';
 import { StoryReviewService } from '../story-review/story-review.service';
-import { LibraryStoriesWithRating } from './story.types';
+import { LibraryStoriesWithRating, StoryWithRatingType } from './story.types';
+import { StoryReviewWithDetails } from '../story-review/story-review.types';
+import { UserService } from '../user/user.service';
 
 @Controller('stories')
 export class StoryController {
@@ -36,7 +38,72 @@ export class StoryController {
     private readonly storyService: StoryService,
     private readonly storyContentService: StoryContentService,
     private readonly storyReviewService: StoryReviewService,
+    private readonly userService: UserService,
   ) {}
+
+  @Get('featured')
+  async getFeaturedStories() {
+    try {
+      let data: {
+        stories: StoryWithRatingType[];
+        reviews: StoryReviewWithDetails[];
+      } = {
+        stories: [],
+        reviews: [],
+      };
+      const featuredStories = await this.storyService.getFeaturedStories();
+
+      for (const featuredStory of featuredStories) {
+        const [rating, featuredReview] = await Promise.all([
+          this.storyReviewService.getStoryRating(String(featuredStory._id)),
+          this.storyReviewService.findOneLean({
+            storyId: String(featuredStory._id),
+          }),
+        ]);
+
+        data = {
+          ...data,
+          stories: [
+            ...data.stories,
+            {
+              ...featuredStory,
+              rating,
+            },
+          ],
+        };
+
+        if (!featuredReview) continue;
+
+        const featuredReviewUser = await this.userService.findOneLean({
+          _id: featuredReview.userId,
+        });
+
+        if (!featuredReviewUser) continue;
+
+        data = {
+          ...data,
+          reviews: [
+            ...data.reviews,
+            {
+              ...featuredReview,
+              userName: featuredReviewUser?.name,
+              storyName: featuredStory.name,
+            },
+          ],
+        };
+      }
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to get featured stories',
+      });
+    }
+  }
 
   @Get('library')
   async getLibraryStories(@Query() dto: GetLibraryStoriesDto) {
