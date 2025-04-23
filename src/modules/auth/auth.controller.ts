@@ -50,7 +50,7 @@ export class AuthController {
 
       throw new BadRequestException({
         success: false,
-        message: 'Failed to sign up',
+        message: 'Sign up failed',
       });
     }
   }
@@ -84,7 +84,7 @@ export class AuthController {
 
       throw new BadRequestException({
         success: false,
-        message: 'Failed to sign in',
+        message: 'Sign in failed',
       });
     }
   }
@@ -98,7 +98,7 @@ export class AuthController {
     } catch (error) {
       throw new BadRequestException({
         success: false,
-        message: 'Failed to sign out',
+        message: 'Sign out failed',
       });
     }
   }

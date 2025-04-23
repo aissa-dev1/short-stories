@@ -108,7 +108,10 @@ export class StoryController {
         },
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
         throw error;
       }
 
