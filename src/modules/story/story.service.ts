@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DeleteResult, Model } from 'mongoose';
+import { DeleteResult, Model, ObjectId } from 'mongoose';
 
 import { Story } from './story.model';
 import { CreateStoryDto, GetLibraryStoriesDto } from './story.dto';
@@ -10,6 +10,7 @@ import {
   ALL_PLANS,
   PAGINATION_LIMIT,
 } from 'src/common/constants/filters.constant';
+import { slugify } from 'src/utils/slugify';
 
 @Injectable()
 export class StoryService {
@@ -23,6 +24,14 @@ export class StoryService {
 
   async getFeaturedStories(): Promise<StoryType[]> {
     return this.storyModel.aggregate([{ $sample: { size: 6 } }]);
+  }
+
+  getStoryIdBySlug(slug: string): Promise<{ _id: ObjectId } | null> {
+    return this.storyModel
+      .findOne({ slug })
+      .select('id')
+      .lean<{ _id: ObjectId }>()
+      .exec();
   }
 
   async findAllLeanPaginated(
@@ -50,6 +59,7 @@ export class StoryService {
     const story = await this.storyModel.create({
       userId,
       ...dto,
+      slug: slugify(dto.name),
     });
     await story.save();
     return story;
@@ -59,12 +69,12 @@ export class StoryService {
     return this.storyModel.findByIdAndUpdate(id, update, { new: true }).exec();
   }
 
-  deleteAll() {
-    return this.storyModel.deleteMany();
-  }
-
   deleteOne(filter: Partial<StoryType> = {}): Promise<DeleteResult> {
     return this.storyModel.deleteOne(filter);
+  }
+
+  deleteMany(filter: Partial<StoryType> = {}) {
+    return this.storyModel.deleteMany(filter);
   }
 
   buildLibraryStoriesFilters(

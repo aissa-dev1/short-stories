@@ -4,6 +4,7 @@ export interface StoryType {
   _id: any;
   userId: any;
   name: string;
+  slug: string;
   description: string;
   about: string[];
   preview: string[];

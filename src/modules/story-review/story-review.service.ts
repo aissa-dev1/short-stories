@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { DeleteResult, Model } from 'mongoose';
 
 import { StoryReview } from './story-review.model';
 import { CreateStoryReviewDto } from './story-review.dto';
@@ -50,5 +50,13 @@ export class StoryReviewService {
         return a + b.stars;
       }, 0) / storyReviews.length || 0
     );
+  }
+
+  deleteOne(filter: Partial<StoryReviewType> = {}): Promise<DeleteResult> {
+    return this.storyReviewModel.deleteOne(filter);
+  }
+
+  deleteMany(filter: Partial<StoryReviewType> = {}) {
+    return this.storyReviewModel.deleteMany(filter);
   }
 }

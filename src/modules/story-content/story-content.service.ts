@@ -32,7 +32,7 @@ export class StoryContentService {
     return this.storyContentModel.deleteOne(filter);
   }
 
-  deleteAll() {
-    return this.storyContentModel.deleteMany();
+  deleteMany(filter: Partial<StoryContentType> = {}) {
+    return this.storyContentModel.deleteMany(filter);
   }
 }

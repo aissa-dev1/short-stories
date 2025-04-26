@@ -31,6 +31,7 @@ import { StoryReviewService } from '../story-review/story-review.service';
 import { LibraryStoriesWithRating, StoryWithRatingType } from './story.types';
 import { StoryReviewWithDetails } from '../story-review/story-review.types';
 import { UserService } from '../user/user.service';
+import { capitalize } from 'src/utils/capitalize';
 
 @Controller('stories')
 export class StoryController {
@@ -141,24 +142,10 @@ export class StoryController {
     }
   }
 
-  @Get(':slugAndId')
-  async findOneBySlugAndId(@Param('slugAndId') slugAndId: string) {
-    const id = slugAndId.split('-').pop() || '';
-
-    if (!isValidObjectId(id)) {
-      throw new BadRequestException({
-        success: false,
-        message: 'Invalid story ID format',
-      });
-    }
-
+  @Get(':slug/id')
+  async getStoryIdBySlug(@Param('slug') slug: string) {
     try {
-      const [story, rating] = await Promise.all([
-        this.storyService.findOneLean({
-          _id: id,
-        }),
-        this.storyReviewService.getStoryRating(id),
-      ]);
+      const story = await this.storyService.getStoryIdBySlug(slug);
 
       if (!story) {
         throw new NotFoundException({
@@ -166,6 +153,40 @@ export class StoryController {
           message: 'Story not found',
         });
       }
+
+      return {
+        success: true,
+        data: story,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to get story id',
+      });
+    }
+  }
+
+  @Get(':slug')
+  async findOneBySlug(@Param('slug') slug: string) {
+    try {
+      const story = await this.storyService.findOneLean({
+        slug,
+      });
+
+      if (!story) {
+        throw new NotFoundException({
+          success: false,
+          message: 'Story not found',
+        });
+      }
+
+      const rating = await this.storyReviewService.getStoryRating(
+        String(story._id),
+      );
 
       return {
         success: true,
@@ -330,7 +351,7 @@ export class StoryController {
       content.push('Hello world! '.repeat(10));
     }
     for (let i = 0; i < 25; i++) {
-      const storyName = getRandomName();
+      const storyName = `${capitalize(getRandomName())} ${capitalize(getRandomName())}`;
       await this.createStory(currentUser, {
         name: storyName,
         description: `Story description ${i + 1}`,
@@ -373,6 +394,7 @@ export class StoryController {
       await Promise.all([
         this.storyService.deleteOne({ _id: id }),
         this.storyContentService.deleteOne({ storyId: id }),
+        this.storyReviewService.deleteMany({ storyId: id }),
       ]);
       return {
         success: true,
@@ -395,8 +417,9 @@ export class StoryController {
   @MarkForDeletion(MarkForDeletionReason.Testing)
   async deleteAll() {
     await Promise.all([
-      this.storyService.deleteAll(),
-      this.storyContentService.deleteAll(),
+      this.storyService.deleteMany(),
+      this.storyContentService.deleteMany(),
+      this.storyReviewService.deleteMany(),
     ]);
     return { message: 'done' };
   }
