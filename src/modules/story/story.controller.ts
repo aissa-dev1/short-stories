@@ -229,7 +229,7 @@ export class StoryController {
     } catch (error) {
       throw new BadRequestException({
         success: false,
-        message: 'Failed to create this story',
+        message: 'Failed to create story',
       });
     }
   }
