@@ -6,8 +6,7 @@ import {
   Get,
   NotFoundException,
   Param,
-  Post,
-  Res,
+  Patch,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -91,7 +90,7 @@ export class UserController {
     }
   }
 
-  @Post('edit-name')
+  @Patch('edit-name')
   @UseGuards(JwtAuthGuard)
   async editName(
     @CurrentUser() currentUser: CurrentUserType,
@@ -131,7 +130,7 @@ export class UserController {
     }
   }
 
-  @Post('edit-email')
+  @Patch('edit-email')
   @UseGuards(JwtAuthGuard)
   async editEmail(
     @Body() dto: EditEmailDto,
@@ -191,7 +190,7 @@ export class UserController {
     }
   }
 
-  @Post('change-password')
+  @Patch('change-password')
   @UseGuards(JwtAuthGuard)
   async changePassword(
     @Body() dto: ChangePasswordDto,
@@ -244,7 +243,7 @@ export class UserController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteOne(
+  async deleteUser(
     @Param('id') id: string,
     @CurrentUser() currentUser: CurrentUserType,
   ) {
