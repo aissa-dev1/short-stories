@@ -28,6 +28,15 @@ export class StoryContentService {
     return storyContent;
   }
 
+  updateStoryContent(
+    id: string,
+    update?: Partial<StoryContentType>,
+  ): Promise<StoryContent | null> {
+    return this.storyContentModel
+      .findByIdAndUpdate(id, update, { new: true })
+      .exec();
+  }
+
   deleteOne(filter: Partial<StoryContentType> = {}): Promise<DeleteResult> {
     return this.storyContentModel.deleteOne(filter);
   }

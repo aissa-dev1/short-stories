@@ -48,6 +48,46 @@ export class CreateStoryDto {
   content?: string[];
 }
 
+export class EditStoryDto {
+  @IsOptional()
+  @Length(1, undefined, { message: 'Story name is too short' })
+  name: string;
+
+  @IsOptional()
+  @Length(1, undefined, { message: 'Story description is too short' })
+  description: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  about?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  preview?: string[];
+
+  @IsOptional()
+  @IsEnum(StoryGenre, {
+    each: true,
+    message: 'Please provide a valid story genre',
+  })
+  genre: StoryGenre[];
+
+  @IsOptional()
+  @IsString({ message: 'Please provide a cover image' })
+  coverImage: string;
+
+  @IsOptional()
+  @IsEnum(UserPlan, { message: 'Invalid plan' })
+  plan?: UserPlan;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  content?: string[];
+}
+
 export class GetLibraryStoriesDto {
   @IsOptional()
   @Transform(({ value }) => (value !== undefined ? Number(value) : value))

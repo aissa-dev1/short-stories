@@ -6,6 +6,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Query,
   Res,
@@ -16,7 +17,11 @@ import { isValidObjectId } from 'mongoose';
 import jsPDF from 'jspdf';
 import { Response } from 'express';
 
-import { CreateStoryDto, GetLibraryStoriesDto } from './story.dto';
+import {
+  CreateStoryDto,
+  EditStoryDto,
+  GetLibraryStoriesDto,
+} from './story.dto';
 import { StoryService } from './story.service';
 import { CurrentUserType } from '../user/user.types';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -32,6 +37,7 @@ import { LibraryStoriesWithRating, StoryWithRatingType } from './story.types';
 import { StoryReviewWithDetails } from '../story-review/story-review.types';
 import { UserService } from '../user/user.service';
 import { capitalize } from 'src/utils/capitalize';
+import { slugify } from 'src/utils/slugify';
 
 @Controller('stories')
 export class StoryController {
@@ -328,6 +334,72 @@ export class StoryController {
       throw new BadRequestException({
         success: false,
         message: 'Failed to download this story',
+      });
+    }
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, UserAdminGuard)
+  async editStory(@Param('id') id: string, @Body() dto: EditStoryDto) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Invalid story ID format',
+      });
+    }
+
+    try {
+      const story = await this.storyService.findOneLean({
+        _id: id,
+      });
+
+      if (!story) {
+        throw new NotFoundException({
+          success: false,
+          message: 'Story not found',
+        });
+      }
+
+      const storyContent = await this.storyContentService.findOneLean({
+        storyId: String(story._id),
+      });
+
+      if (!storyContent) {
+        throw new NotFoundException({
+          success: false,
+          message: 'Story content not found',
+        });
+      }
+
+      const slug = slugify(dto.name);
+      await Promise.all([
+        this.storyService.updateStory(id, {
+          ...dto,
+          slug,
+        }),
+        this.storyContentService.updateStoryContent(String(storyContent._id), {
+          content: dto.content,
+        }),
+      ]);
+
+      return {
+        success: true,
+        data: {
+          message: 'Story edited successfully',
+          slug,
+        },
+      };
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to edit story',
       });
     }
   }
