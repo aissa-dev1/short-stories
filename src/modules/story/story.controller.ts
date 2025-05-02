@@ -230,7 +230,7 @@ export class StoryController {
       });
       return {
         success: true,
-        message: `Story '${story.name}' created successfully`,
+        message: `Story '${story.name}' have been created successfully`,
       };
     } catch (error) {
       throw new BadRequestException({
@@ -385,7 +385,7 @@ export class StoryController {
       return {
         success: true,
         data: {
-          message: 'Story edited successfully',
+          message: 'Story have been edited successfully',
           slug,
         },
       };
