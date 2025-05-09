@@ -49,6 +49,7 @@ export class StoryReviewController {
             ...storyReview,
             userName: user?.name || '',
             storyName: story?.name || '',
+            storySlug: story?.slug || '',
           },
         ];
       }

@@ -95,6 +95,7 @@ export class StoryController {
               ...featuredReview,
               userName: featuredReviewUser?.name,
               storyName: featuredStory.name,
+              storySlug: featuredStory.slug,
             },
           ],
         };

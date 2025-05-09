@@ -11,4 +11,5 @@ export interface StoryReviewType {
 export interface StoryReviewWithDetails extends StoryReviewType {
   userName: string;
   storyName: string;
+  storySlug: string;
 }
