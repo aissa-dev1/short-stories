@@ -440,7 +440,7 @@ export class StoryController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, UserAdminGuard)
   async deleteStory(
     @CurrentUser() currentUser: CurrentUserType,
     @Param('id') id: string,
@@ -454,13 +454,14 @@ export class StoryController {
 
     try {
       const story = await this.storyService.findOneLean({
+        _id: id,
         userId: currentUser.id,
       });
 
       if (!story) {
         throw new UnauthorizedException({
           success: false,
-          message: `You don't have permission to delete this story`,
+          message: 'No story found',
         });
       }
 

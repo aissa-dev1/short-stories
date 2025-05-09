@@ -37,6 +37,15 @@ export class StoryReviewService {
     return storyReview;
   }
 
+  updateStoryReview(
+    id: string,
+    update?: Partial<StoryReviewType>,
+  ): Promise<StoryReview | null> {
+    return this.storyReviewModel
+      .findByIdAndUpdate(id, update, { new: true })
+      .exec();
+  }
+
   async getStoryRating(storyId: any): Promise<number> {
     const storyReviews = await this.storyReviewModel
       .find({
