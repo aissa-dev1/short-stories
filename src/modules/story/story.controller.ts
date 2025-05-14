@@ -314,16 +314,11 @@ export class StoryController {
 
       res.set({
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename=example.pdf',
+        'Content-Disposition': `attachment; filename=${story.name}.pdf`,
         'Content-Length': pdfBuffer.length,
       });
 
-      res.end(
-        JSON.stringify({
-          success: true,
-          data: pdfBuffer,
-        }),
-      );
+      res.end(pdfBuffer);
     } catch (error) {
       if (
         error instanceof BadRequestException ||
